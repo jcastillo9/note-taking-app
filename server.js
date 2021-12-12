@@ -1,22 +1,22 @@
 const express = require('express');
-const fs = require('fs')
 const path = require('path');
-const db = require('./db/db.json')
+const PORT = 3001;
+const fs = require('fs')
 
 const app = express();
-const PORT = process.env.PORT || 3001;
 
-app.use(express.static('public'));
-
+// Sets up the Express app to handle data parsing
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
+app.use(express.static('public'));
+
 app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, '/public/index.html'));
+    res.sendFile(path.join(__dirname, 'public/index.html'));
 });
 
 app.get('/notes', (req, res) => {
-    res.sendFile(path.join(__dirname, '/public/notes.html'));
+    res.sendFile(path.join(__dirname, 'public/notes.html'));
 });
 
 app.get('/api/notes', (req, res) => {
@@ -26,18 +26,40 @@ app.get('/api/notes', (req, res) => {
 })
 
 app.post('/api/notes', (req, res) => {
-    const { title, text } = req.body;
-    
-    const newNote = {
+    var title = req.body.title
+    var text = req.body.text
+    var newNote = {
         title,
         text,
     }
-    fs.readFile('db/db.json', (err, data) => {
-        const createNote = JSON.parse(data)
-        createNote.push(newNote)
-        fs.writeFile('db/db.json', JSON.stringify(createNote), (err) => {
-            err ? console.log(err) : console.log(" Note has been saved");;
+    fs.readFile('db/db.json', 'utf8', (err, data) => {
+        var currentNotes = JSON.parse(data)
+        currentNotes.push(newNote)
+        fs.writeFile('db/db.json', JSON.stringify(currentNotes), (err) => {
+            err ? console.log(err) : console.log(newNote.title + " has been saved");;
         })
         res.sendFile(path.join(__dirname, 'public/notes.html'));
     })
 })
+
+app.delete("/api/notes/:id", (req, res) => {
+
+    let noteData = fs.readFileSync('./db/db.json');
+    let noteTaker = JSON.parse(noteData);
+
+    const notesSaved = noteTaker.find(n => n.id === parseInt(req.params.id));
+
+    const notesIndex = noteTaker.indexOf(notesSaved);
+    noteTaker.splice(notesIndex);
+
+
+    fs.writeFile(__dirname + "/db/db.json", JSON.stringify(noteTaker), (err, data) => {
+     if (err) throw err;
+
+     res.json(noteTaker)    
+   }); 
+ });
+
+app.listen(PORT, () => {
+    console.log(`Example app listening at http://localhost:${PORT}`);
+});
