@@ -36,7 +36,7 @@ As a small business owner, I want to be able to write and save notes so that I c
   * CSS
 
 ## Installation
- Deployed using Heroku: <>
+ Deployed using Heroku: <https://jc-note-taking-app.herokuapp.com/>
  
  ## Questions:
  ### Reach me here:
