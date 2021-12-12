@@ -24,3 +24,20 @@ app.get('/api/notes', (req, res) => {
         err ? console.log(err) : res.json(JSON.parse(data))
     })
 })
+
+app.post('/api/notes', (req, res) => {
+    const { title, text } = req.body;
+    
+    const newNote = {
+        title,
+        text,
+    }
+    fs.readFile('db/db.json', (err, data) => {
+        const createNote = JSON.parse(data)
+        createNote.push(newNote)
+        fs.writeFile('db/db.json', JSON.stringify(createNote), (err) => {
+            err ? console.log(err) : console.log(" Note has been saved");;
+        })
+        res.sendFile(path.join(__dirname, 'public/notes.html'));
+    })
+})
