@@ -42,24 +42,6 @@ app.post('/api/notes', (req, res) => {
     })
 })
 
-app.delete("/api/notes/:id", (req, res) => {
-
-    let noteData = fs.readFileSync('./db/db.json');
-    let noteTaker = JSON.parse(noteData);
-
-    const notesSaved = noteTaker.find(n => n.id === parseInt(req.params.id));
-
-    const notesIndex = noteTaker.indexOf(notesSaved);
-    noteTaker.splice(notesIndex);
-
-
-    fs.writeFile(__dirname + "/db/db.json", JSON.stringify(noteTaker), (err, data) => {
-     if (err) throw err;
-
-     res.json(noteTaker)    
-   }); 
- });
-
 app.listen(PORT, () => {
     console.log(`Example app listening at http://localhost:${PORT}`);
 });
